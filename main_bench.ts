@@ -1,4 +1,4 @@
-import JWECookieMap, { NewCookieWithKeyPair } from "./main.ts";
+import { JWECookieMap, newCookieWithKeyPair } from "./main.ts";
 import { CookieMap } from "./deps.ts";
 import { mergeHeaders } from "https://deno.land/std@0.185.0/http/cookie_map.ts";
 
@@ -12,7 +12,7 @@ Deno.bench(function createDefaultJWE() {
 });
 
 Deno.bench(async function createNewJWE() {
-  await NewCookieWithKeyPair();
+  await newCookieWithKeyPair();
 });
 
 Deno.bench(function setDefault() {

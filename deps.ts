@@ -4,7 +4,8 @@ import {
   CookieMapOptions,
   CookieMapSetDeleteOptions,
   Headered,
+  mergeHeaders,
 } from "https://deno.land/std@0.185.0/http/cookie_map.ts";
 
-export { CookieMap, jose };
+export { CookieMap, jose, mergeHeaders };
 export type { CookieMapOptions, CookieMapSetDeleteOptions, Headered };
