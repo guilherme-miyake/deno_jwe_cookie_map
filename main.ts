@@ -1,9 +1,10 @@
-/** 
+/**
 Provides a iterable map interfaces for managing JWE cookies server side. Similar
 to {@linkcode CookieMap}
 
-By default the {@linkcode JWECookieMap} uses the automatically generated
-"RSA-OAEP-256" key pair, this value is not persisted between executions.
+By default the {@linkcode JWECookieMap} uses a automatically generated
+"RSA-OAEP-256" key pair in the {@linkcode DEFAULT_CONFIG}, this value is not
+persisted between executions.
 
 {@linkcode newCookieWithKeyPair} is a helper functions to generate a
 JWECookieMap with a new set of automatically generated key pair.
@@ -92,6 +93,10 @@ import {
   jose,
 } from "./deps.ts";
 
+/**
+ * Provides a way to configure the keys used for encryption, default options for cookies
+ * and a way to add more jose.EncryptJWT configurations.
+ */
 export class JWECookieConfiguration {
   privateKey: jose.KeyLike | Uint8Array;
   publicKey: jose.KeyLike | Uint8Array;
@@ -110,13 +115,22 @@ export class JWECookieConfiguration {
   }
 }
 
-export const configWithNewKeyPair = async () => {
+/**
+ * Generates a new "RSA-OAEP-256" key pair and return a new
+ * {@linkcode JWECookieConfiguration} instance with other default values
+ */
+export async function configWithNewKeyPair(): Promise<JWECookieConfiguration> {
   const keyPair = await jose.generateKeyPair("RSA-OAEP-256", {
     extractable: true,
   });
   return new JWECookieConfiguration(keyPair.privateKey, keyPair.publicKey);
-};
+}
 
+/**
+ * The default {@linkcode JWECookieConfiguration}} used by new {@linkcode JWECookieMap}
+ * instance, comes with a automatically generated "RSA-OAEP-256" key pair that is not
+ * persisted between executions.
+ */
 export const DEFAULT_CONFIG = await configWithNewKeyPair();
 
 /**
@@ -186,13 +200,17 @@ export class JWECookieMap extends CookieMap {
   }
 }
 
-export const newCookieWithKeyPair = async (
+/**
+ * Generates a new "RSA-OAEP-256" key pair and return a new
+ * {@linkcode JWECookieMap} instance with other default values
+ */
+export async function newCookieWithKeyPair(
   request?: Headers | Headered,
   options?: CookieMapOptions,
-) => {
+) {
   return new JWECookieMap(
     request ?? new Headers(),
     options,
     await configWithNewKeyPair(),
   );
-};
+}
