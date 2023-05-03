@@ -3,11 +3,11 @@ import {
   assertRejects,
 } from "https://deno.land/std@0.185.0/testing/asserts.ts";
 import * as src from "./main.ts";
-import * as lib from "https://deno.land/x/jwe_cookie_map/main.ts";
+import * as lib from "https://deno.land/x/jwe_cookie_map@v0.0.2/main.ts";
 import { mergeHeaders } from "https://deno.land/std@0.185.0/http/cookie_map.ts";
 import * as jose from "https://deno.land/x/jose@v4.14.4/util/errors.ts";
 
-const sources = [src];
+const sources = [src, lib];
 const names = ["Local Source", "Latest Release"];
 for (const index in sources) {
   const sourceCode = sources[index];
