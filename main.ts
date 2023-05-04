@@ -94,8 +94,8 @@ import {
 } from "./deps.ts";
 
 /**
- * Alias type for {@codelink defaultEncryptConfiguration} and 
- * {@codelink JWECookieMap.setEncrypted} `encryptConfiguration` parameter.
+ * Alias type for `defaultEncryptConfiguration` and
+ * `JWECookieMap.setEncrypted` parameter `encryptConfiguration`.
  * ```typescript
  * const encryptConfig: chainedEncryptJWTCall = (jwt) => jwt.setIssuedAt();
  * ```
@@ -103,7 +103,7 @@ import {
 export type chainedEncryptJWTCall = (jwt: jose.EncryptJWT) => jose.EncryptJWT;
 
 /**
- * The default encryptConfiguration used by {@codelink JWECookieConfiguration}
+ * The default encryptConfiguration used by JWECookieConfiguration
  * will set a protected header with proper parameters to match the automatic
  * key pair generation.
  * @example
@@ -149,7 +149,7 @@ export async function configWithNewKeyPair(): Promise<JWECookieConfiguration> {
 }
 
 /**
- * The default {@linkcode JWECookieConfiguration}} used by new {@linkcode JWECookieMap}
+ * The default {@linkcode JWECookieConfiguration} used by new {@linkcode JWECookieMap}
  * instance, comes with a automatically generated "RSA-OAEP-256" key pair that is not
  * persisted between executions.
  */
