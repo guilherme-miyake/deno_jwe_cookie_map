@@ -93,12 +93,23 @@ import {
   jose,
 } from "./deps.ts";
 
-export type chainedJWEEncryptedCall = (jwt: jose.EncryptJWT) => jose.EncryptJWT;
+/**
+ * Alias type for {@codelink defaultEncryptConfiguration} and 
+ * {@codelink JWECookieMap.setEncrypted} `encryptConfiguration` parameter.
+ * ```typescript
+ * const encryptConfig: chainedEncryptJWTCall = (jwt) => jwt.setIssuedAt();
+ * ```
+ */
+export type chainedEncryptJWTCall = (jwt: jose.EncryptJWT) => jose.EncryptJWT;
 
 /**
  * The default encryptConfiguration used by {@codelink JWECookieConfiguration}
  * will set a protected header with proper parameters to match the automatic
- * key pair generation
+ * key pair generation.
+ * @example
+ * ```typescript
+ * const newEncryptConfig: chainedEncryptJWTCall = (jwt) => defaultEncryptConfiguration(jwt).setIssuedAt();
+ * ```
  */
 export const defaultEncryptConfiguration = (jwt: jose.EncryptJWT) =>
   jwt.setProtectedHeader({ alg: "RSA-OAEP-256", enc: "A256GCM" });
@@ -111,12 +122,12 @@ export class JWECookieConfiguration {
   privateKey: jose.KeyLike | Uint8Array;
   publicKey: jose.KeyLike | Uint8Array;
   defaultOptions?: CookieMapOptions;
-  encryptConfiguration: chainedJWEEncryptedCall;
+  encryptConfiguration: chainedEncryptJWTCall;
   decryptOptions: jose.DecryptOptions;
   constructor(
     privateKey: jose.KeyLike | Uint8Array,
     publicKey: jose.KeyLike | Uint8Array,
-    encryptConfiguration: chainedJWEEncryptedCall = defaultEncryptConfiguration,
+    encryptConfiguration: chainedEncryptJWTCall = defaultEncryptConfiguration,
     decryptOptions: jose.DecryptOptions = {},
   ) {
     this.privateKey = privateKey;
@@ -162,17 +173,17 @@ export class JWECookieMap extends CookieMap {
   }
 
   /**
-   * Encrypt cookies with {@param options} overwriting default cookie
-   * options and calling {@param encryptConfiguration} after the default
+   * Encrypt cookies with parameter `options` overwriting default cookie
+   * options and calling parameter `encryptConfiguration` after the default
    * encryptConfiguration is called.
    * Default cookie options and encryptConfiguration are set on
-   * {@param JWECookieConfiguration}
+   * {@linkcode JWECookieConfiguration}
    */
   async setEncrypted(
     key: string,
     payload: jose.JWTPayload,
     options?: CookieMapSetDeleteOptions,
-    encryptConfiguration?: chainedJWEEncryptedCall,
+    encryptConfiguration?: chainedEncryptJWTCall,
   ) {
     let jwt = this.cookieConfiguration.encryptConfiguration(
       new jose.EncryptJWT(payload),
@@ -186,9 +197,9 @@ export class JWECookieMap extends CookieMap {
   }
 
   /**
-   * Decrypt cookies with {@param decryptOptions} overwriting default
+   * Decrypt cookies with parameter `decryptOptions` overwriting default
    * decryptOptions.
-   * Default decryptOptions are set on {@param JWECookieConfiguration}
+   * Default decryptOptions are set on {@linkcode JWECookieConfiguration}
    */
   async getDecrypted(key: string, decryptOptions?: jose.DecryptOptions) {
     if (this.get(key) == undefined) return undefined;

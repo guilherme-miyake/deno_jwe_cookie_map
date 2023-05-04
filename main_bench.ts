@@ -1,6 +1,6 @@
 import { JWECookieMap, newCookieWithKeyPair } from "./main.ts";
 import { CookieMap } from "./deps.ts";
-import { mergeHeaders } from "https://deno.land/std@0.185.0/http/cookie_map.ts";
+import { mergeHeaders } from "./deps.ts";
 
 const headers = new Headers();
 Deno.bench(function createDefault() {
