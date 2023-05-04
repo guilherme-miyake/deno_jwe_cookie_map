@@ -6,6 +6,7 @@ import * as src from "./main.ts";
 import * as lib from "https://deno.land/x/jwe_cookie_map@v0.0.2/main.ts";
 import { mergeHeaders } from "https://deno.land/std@0.185.0/http/cookie_map.ts";
 import * as jose from "https://deno.land/x/jose@v4.14.4/util/errors.ts";
+import { defaultEncryptConfiguration } from "./main.ts";
 
 const sources = [src, lib];
 const names = ["Local Source", "Latest Release"];
@@ -32,14 +33,14 @@ for (const index in sources) {
     const newCookies = new JWECookieMap(headers);
     const now = new Date();
     newCookies.cookieConfiguration.encryptConfiguration = (jwt) =>
-      jwt.setIssuedAt(now.getTime());
+      defaultEncryptConfiguration(jwt.setIssuedAt(now.getTime()));
     const payload = { foo: "bar" };
     await newCookies.setEncrypted("key", payload);
 
     const cookie = mergeHeaders(newCookies).get("set-cookie");
     headers.set("Cookie", cookie!);
     const withCookies = new JWECookieMap(headers);
-    await assertEquals(await withCookies.getDecrypted("key"), {
+    assertEquals(await withCookies.getDecrypted("key"), {
       ...payload,
       iat: now.getTime(),
     });

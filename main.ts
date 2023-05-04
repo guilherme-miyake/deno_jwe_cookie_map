@@ -93,6 +93,16 @@ import {
   jose,
 } from "./deps.ts";
 
+export type chainedJWEEncryptedCall = (jwt: jose.EncryptJWT) => jose.EncryptJWT;
+
+/**
+ * The default encryptConfiguration used by {@codelink JWECookieConfiguration}
+ * will set a protected header with proper parameters to match the automatic
+ * key pair generation
+ */
+export const defaultEncryptConfiguration = (jwt: jose.EncryptJWT) =>
+  jwt.setProtectedHeader({ alg: "RSA-OAEP-256", enc: "A256GCM" });
+
 /**
  * Provides a way to configure the keys used for encryption, default options for cookies
  * and a way to add more jose.EncryptJWT configurations.
@@ -101,17 +111,18 @@ export class JWECookieConfiguration {
   privateKey: jose.KeyLike | Uint8Array;
   publicKey: jose.KeyLike | Uint8Array;
   defaultOptions?: CookieMapOptions;
-  encryptConfiguration: (jwt: jose.EncryptJWT) => jose.EncryptJWT;
+  encryptConfiguration: chainedJWEEncryptedCall;
+  decryptOptions: jose.DecryptOptions;
   constructor(
     privateKey: jose.KeyLike | Uint8Array,
     publicKey: jose.KeyLike | Uint8Array,
-    encryptConfiguration: (jwt: jose.EncryptJWT) => jose.EncryptJWT = (
-      jwt: jose.EncryptJWT,
-    ) => jwt,
+    encryptConfiguration: chainedJWEEncryptedCall = defaultEncryptConfiguration,
+    decryptOptions: jose.DecryptOptions = {},
   ) {
     this.privateKey = privateKey;
     this.publicKey = publicKey;
     this.encryptConfiguration = encryptConfiguration;
+    this.decryptOptions = decryptOptions;
   }
 }
 
@@ -147,19 +158,26 @@ export class JWECookieMap extends CookieMap {
   ) {
     super(request, { ...cookieConfiguration, ...options });
     this.cookieConfiguration = cookieConfiguration;
-    this.set = super.set;
-    this.get = super.get;
     return this;
   }
 
+  /**
+   * Encrypt cookies with {@param options} overwriting default cookie
+   * options and calling {@param encryptConfiguration} after the default
+   * encryptConfiguration is called.
+   * Default cookie options and encryptConfiguration are set on
+   * {@param JWECookieConfiguration}
+   */
   async setEncrypted(
     key: string,
     payload: jose.JWTPayload,
     options?: CookieMapSetDeleteOptions,
+    encryptConfiguration?: chainedJWEEncryptedCall,
   ) {
-    let jwt = new jose.EncryptJWT(payload)
-      .setProtectedHeader({ alg: "RSA-OAEP-256", enc: "A256GCM" });
-    jwt = this.cookieConfiguration.encryptConfiguration(jwt);
+    let jwt = this.cookieConfiguration.encryptConfiguration(
+      new jose.EncryptJWT(payload),
+    );
+    if (encryptConfiguration) jwt = encryptConfiguration(jwt);
     return this.set(
       key,
       await jwt.encrypt(this.cookieConfiguration.publicKey),
@@ -167,34 +185,17 @@ export class JWECookieMap extends CookieMap {
     );
   }
 
-  async decryptedCookies() {
-    const cookies: { [key: string]: jose.JWTPayload } = {};
-    for (const [key, value] of this.entries()) {
-      const jwt = await jose.jwtDecrypt(
-        value,
-        this.cookieConfiguration.privateKey,
-      );
-      cookies[key] = jwt.payload;
-    }
-    return cookies;
-  }
-
-  async setMultipleEncryptedPayloas(
-    payloads: { [key: string]: jose.JWTPayload },
-    options?: CookieMapSetDeleteOptions,
-  ) {
-    await Promise.all(
-      Object.entries(payloads).map(([key, value]) => {
-        return this.setEncrypted(key, value, options);
-      }),
-    );
-  }
-
-  async getDecrypted(key: string) {
+  /**
+   * Decrypt cookies with {@param decryptOptions} overwriting default 
+   * decryptOptions.
+   * Default decryptOptions are set on {@param JWECookieConfiguration}
+   */
+  async getDecrypted(key: string, decryptOptions?: jose.DecryptOptions) {
     if (this.get(key) == undefined) return undefined;
     const jwt = await jose.jwtDecrypt(
       this.get(key)!,
       this.cookieConfiguration.privateKey,
+      { ...this.cookieConfiguration.decryptOptions, ...decryptOptions },
     );
     return jwt.payload;
   }

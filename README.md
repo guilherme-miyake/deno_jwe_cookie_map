@@ -21,4 +21,5 @@ with your default cookie options.
 
 ## Documentation
 
-Browse the [Full Documentation](https://deno.land/x/jwe_cookie_map/main.ts) with examples on Deno Land.
+Browse the [Full Documentation](https://deno.land/x/jwe_cookie_map/main.ts) with
+examples on Deno Land.
