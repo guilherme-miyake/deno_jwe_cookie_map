@@ -186,7 +186,7 @@ export class JWECookieMap extends CookieMap {
   }
 
   /**
-   * Decrypt cookies with {@param decryptOptions} overwriting default 
+   * Decrypt cookies with {@param decryptOptions} overwriting default
    * decryptOptions.
    * Default decryptOptions are set on {@param JWECookieConfiguration}
    */
