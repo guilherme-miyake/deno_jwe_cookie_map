@@ -3,5 +3,4 @@
   "tasks": {
     "relock": "rm deno.lock && deno cache --reload --lock=deno.lock ./deps.ts ./main_test.ts"
   }
-
 }
