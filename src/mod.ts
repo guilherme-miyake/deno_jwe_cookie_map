@@ -19,7 +19,7 @@ they decrypted payloads:
 
 ```ts
 import { mergeHeaders } from "https://deno.land/std/http/cookie_map.ts";
-import { JWECookieMap } from "https://deno.land/x/jwe_cookie_map/main.ts";
+import { JWECookieMap } from "https://deno.land/x/jwe_cookie_map/mod.ts";
 
 const initialRequestHeader = new Headers();
 const response = new Response("hello", {
@@ -43,7 +43,7 @@ available for creating a response:
 
 ```ts
 import { mergeHeaders } from "https://deno.land/std/http/cookie_map.ts";
-import { JWECookieMap } from "https://deno.land/x/jwe_cookie_map/main.ts";
+import { JWECookieMap } from "https://deno.land/x/jwe_cookie_map/mod.ts";
 
 const request = new Request("https://localhost/", {
   headers: { "cookie": "foo=bar; bar=baz;" },
@@ -66,7 +66,7 @@ response at construction of the cookies object, they can be passed and any set
 cookies will be added directly to the response headers:
 
 ```ts
-import { JWECookieMap } from "https://deno.land/x/jwe_cookie_map/main.ts";
+import { JWECookieMap } from "https://deno.land/x/jwe_cookie_map/mod.ts";
 
 const request = new Request("https://localhost/", {
   headers: { "cookie": "foo=bar; bar=baz;" },
