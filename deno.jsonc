@@ -1,5 +1,7 @@
 {
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "tasks": {
     "relock": "rm deno.lock && deno cache --reload --lock=deno.lock ./deps.ts ./main_test.ts"
   }
+
 }

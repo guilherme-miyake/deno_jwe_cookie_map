@@ -2,11 +2,11 @@ import {
   assertEquals,
   assertRejects,
 } from "https://deno.land/std@0.185.0/testing/asserts.ts";
-import * as src from "./main.ts";
+import * as src from "./mod.ts";
 import * as lib from "https://deno.land/x/jwe_cookie_map@v1.0.0-rc0/main.ts";
 import { mergeHeaders } from "https://deno.land/std@0.185.0/http/cookie_map.ts";
 import * as jose from "https://deno.land/x/jose@v4.14.4/util/errors.ts";
-import { defaultEncryptConfiguration } from "./main.ts";
+import { defaultEncryptConfiguration } from "./mod.ts";
 
 const sources = [src, lib];
 const names = ["Local Source", "Latest Release"];

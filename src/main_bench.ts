@@ -1,4 +1,4 @@
-import { JWECookieMap, newCookieWithKeyPair } from "./main.ts";
+import { JWECookieMap, newCookieWithKeyPair } from "./mod.ts";
 import { CookieMap } from "./deps.ts";
 import { mergeHeaders } from "./deps.ts";
 
